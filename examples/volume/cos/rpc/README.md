@@ -37,10 +37,10 @@ Compared to [binary](../binary/): Controller uses **Go SDK** instead of **coscmd
 
 ## 1. cosfs (Cubelet node)
 
-Attach/Detach use cosfs. **Cubelet node only** — see [../README.md §1](../README.md#1-install-dependencies).
+Attach/Detach use cosfs. Install and verify: [../README.md §1](../README.md#1-install-dependencies).
 
 ```bash
-sudo ../install-deps.sh --cosfs
+sudo /usr/local/services/cubetoolbox/Cubelet/plugin/install-deps.sh --cosfs
 ls /dev/fuse && which cosfs && cosfs --version
 ```
 

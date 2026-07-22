@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 # Install Tencent Cloud COS dependencies for CubeSandbox volume plugins.
 #
-# Where to run (multi-node clusters):
-#   cosfs  → Cubelet node(s)     attach/detach   binary + rpc
-#   coscmd → CubeMaster node      create/destroy  binary only
-#   jq     → CubeMaster node      binary JSON     binary only
+# Packaged under CubeMaster/plugin/ and Cubelet/plugin/ in release bundles.
+# Source: examples/volume/cos/install-deps.sh
+#
+# Where to run (multi-node):
+#   cosfs  → Cubelet     attach/detach   binary + rpc
+#   coscmd → CubeMaster  create/destroy  binary only
+#   jq     → CubeMaster  binary JSON     binary only
 #
 # Usage:
-#   ./install-deps.sh --all              # cosfs + coscmd + jq (typical binary demo)
-#   ./install-deps.sh --cosfs            # Cubelet / attach side only
-#   ./install-deps.sh --coscmd           # CubeMaster / create side only (binary plugin)
-#   ./install-deps.sh --jq               # required by binary shell plugin
-#   ./install-deps.sh --all --check-only # verify already-installed tools only
+#   sudo .../Cubelet/plugin/install-deps.sh --cosfs
+#   sudo .../CubeMaster/plugin/install-deps.sh --coscmd --jq
+#   sudo .../Cubelet/plugin/install-deps.sh --all           # single-node
+#   ./install-deps.sh --all --check-only
+#
+# ARM/aarch64 is not supported (--cosfs refuses); official cosfs is x86_64/amd64 only.
 #
 # Supported families (auto-detected via /etc/os-release):
 #   RHEL/CentOS/TencentOS/Rocky/Alma 7/8/9  — cosfs RPM + yum/dnf
@@ -28,11 +32,9 @@
 #     platform:elN  → treat as EL N (e.g. el9)
 #     platform:tlN  → TencentOS Server N (e.g. tl4); treat as modern EL8+ cosfs
 #
-# Official docs (latest packages / manual install):
+# Official docs:
 #   cosfs:  https://cloud.tencent.com/document/product/436/10976
 #   coscmd: https://cloud.tencent.com/document/product/436/6883
-#
-# RPC plugin Controller uses COS Go SDK (go mod); no coscmd — see cos/rpc/README.md
 
 set -euo pipefail
 
@@ -49,7 +51,7 @@ CHECK_ONLY=0
 COSFS_EL_FLAVOR=""
 
 usage() {
-  sed -n '2,20p' "$0"
+  sed -n '2,24p' "$0"
   exit "${1:-0}"
 }
 
@@ -423,9 +425,27 @@ check_jq() {
   log "  jq: OK (${ver}, JSON parse ok)"
 }
 
+require_x86_64_for_cosfs() {
+  # Official cosfs releases publish only x86_64/amd64 packages; Node attach
+  # for the COS volume plugin depends on cosfs, so ARM hosts are unsupported.
+  local arch
+  arch="$(uname -m)"
+  case "$arch" in
+    x86_64|amd64) return 0 ;;
+    *)
+      echo "ERROR: cosfs (required for COS volume attach) does not support architecture ${arch}; official packages are x86_64/amd64 only. See ${COSFS_DOC}" >&2
+      exit 1
+      ;;
+  esac
+}
+
 # ── main ────────────────────────────────────────────────────────────────────
 
 detect_os
+
+if [[ "$INSTALL_COSFS" -eq 1 ]]; then
+  require_x86_64_for_cosfs
+fi
 
 if [[ "$CHECK_ONLY" -eq 0 ]]; then
   [[ "$INSTALL_COSFS"  -eq 1 ]] && install_cosfs

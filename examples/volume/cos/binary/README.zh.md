@@ -20,7 +20,7 @@
 | 5 | 配置 CubeMaster + Cubelet — [§3–§5](../README.zh.md#3-配置-cubemaster) |
 | 6 | SDK 验证 — [§6–§7](../README.zh.md#6-准备-sdk-环境) |
 
-**本示例依赖**：CubeMaster 侧 [coscmd](https://cloud.tencent.com/document/product/436/6883)；Cubelet 侧 [cosfs](https://cloud.tencent.com/document/product/436/10976)。不使用 COS Go SDK（见 [rpc](../rpc/)）。
+**本示例依赖**：CubeMaster 侧 [coscmd](https://cloud.tencent.com/document/product/436/6883)；Cubelet 侧 [cosfs](https://cloud.tencent.com/document/product/436/10976)。不使用 COS Go SDK（见 [rpc](../rpc/)）。依赖安装见 [../README.zh.md §1](../README.zh.md#1-安装依赖)。
 
 ---
 

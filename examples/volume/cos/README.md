@@ -31,6 +31,8 @@ This guide is for **first-time Volume Plugin users**: follow the steps in order 
 **Single-machine dev:** CubeMaster and Cubelet on one host — install deps once.  
 **Multi-node:** See the table in [§1 Install dependencies](#1-install-dependencies).
 
+> **Architecture:** ARM / aarch64 is not supported (official cosfs packages are x86_64 / amd64 only).
+
 ---
 
 ## 1. Install dependencies
@@ -46,39 +48,35 @@ This guide is for **first-time Volume Plugin users**: follow the steps in order 
 
 > **rpc plugin:** Cubelet still needs cosfs; **no** coscmd / jq. Controller logic lives in the `cube-volume-cos-rpc` process using the Go SDK.
 
-### Option A: install script (recommended)
+### Container deployment (Kubernetes / images)
 
-Script: `examples/volume/cos/install-deps.sh`. Supports CentOS / TencentOS / Ubuntu, etc.; runs basic checks after install.
+Container images already include **cosfs, coscmd, and jq** — no need to run the script below.
 
-**Cubelet node** (runs Cubelet, attach):
+### Option A: install script (recommended for bare metal / one-click)
 
-```bash
-cd /path/to/CubeSandbox
-sudo ./examples/volume/cos/install-deps.sh --cosfs
-```
-
-**CubeMaster node** (binary create/destroy):
+**Cubelet node:**
 
 ```bash
-sudo ./examples/volume/cos/install-deps.sh --coscmd --jq
+sudo /usr/local/services/cubetoolbox/Cubelet/plugin/install-deps.sh --cosfs
 ```
 
-**Single machine, full binary stack:**
+**CubeMaster node:**
 
 ```bash
-sudo ./examples/volume/cos/install-deps.sh --all
+sudo /usr/local/services/cubetoolbox/CubeMaster/plugin/install-deps.sh --coscmd --jq
 ```
 
-Check only (no install):
+**Single machine** (CubeMaster and Cubelet on one host):
 
 ```bash
-./examples/volume/cos/install-deps.sh --cosfs --check-only
-./examples/volume/cos/install-deps.sh --coscmd --jq --check-only
+sudo /usr/local/services/cubetoolbox/Cubelet/plugin/install-deps.sh --all
 ```
+
+Check only (no install): add `--check-only`.
 
 ### Option B: manual install — Tencent Cloud official docs
 
-The script may not cover every distro/arch (ARM, custom images). **Follow Tencent docs** and verify with the commands below.
+**Follow Tencent docs** and verify with the commands below.
 
 | Tool | Official doc |
 |------|--------------|
@@ -103,13 +101,6 @@ Both must succeed; missing `/dev/fuse` breaks attach.
 
 ```bash
 which coscmd && coscmd --version
-```
-
-Optional: test bucket access (after configuring keys in `volume-cos.conf`):
-
-```bash
-source /usr/local/services/cubetoolbox/CubeMaster/plugin/volume-cos.conf
-coscmd -b "$BUCKET" -r "$REGION" list /
 ```
 
 **CubeMaster — jq** (binary)

@@ -35,12 +35,10 @@
 
 ## 1. cosfs（Cubelet 节点）
 
-Attach/Detach 通过 cosfs 挂载。**仅在 Cubelet 节点**安装，步骤与校验见 [../README.zh.md §1](../README.zh.md#1-安装依赖)。
-
-快速命令：
+Attach/Detach 通过 cosfs 挂载。安装与校验见 [../README.zh.md §1](../README.zh.md#1-安装依赖)。
 
 ```bash
-sudo ../install-deps.sh --cosfs          # 或按官方文档手动安装
+sudo /usr/local/services/cubetoolbox/Cubelet/plugin/install-deps.sh --cosfs
 ls /dev/fuse && which cosfs && cosfs --version
 ```
 
